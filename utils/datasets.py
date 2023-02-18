@@ -570,7 +570,7 @@ class LoadImagesAndLabels(Dataset):  # for training/testing
                 x[:, 0] = 0
 
         n = len(shapes)  # number of images
-        bi = np.floor(np.arange(n) / batch_size).astype(np.int)  # batch index
+        bi = np.floor(np.arange(n) / batch_size).astype(np.int32)  # batch index
         nb = bi[-1] + 1  # number of batches
         self.batch = bi  # batch index of image
         self.n = n
@@ -599,7 +599,7 @@ class LoadImagesAndLabels(Dataset):  # for training/testing
                     shapes[i] = [1, 1 / mini]
 
             self.batch_shapes = (
-                np.ceil(np.array(shapes) * img_size / stride + pad).astype(np.int)
+                np.ceil(np.array(shapes) * img_size / stride + pad).astype(np.int32)
                 * stride
             )
 
@@ -965,7 +965,7 @@ class LoadImagesAndLabelsVisDrone(LoadImagesAndLabels):
                 x[:, 0] = 0
 
         n = len(shapes)  # number of images
-        bi = np.floor(np.arange(n) / batch_size).astype(np.int)  # batch index
+        bi = np.floor(np.arange(n) / batch_size).astype(np.int32)  # batch index
         nb = bi[-1] + 1  # number of batches
         self.batch = bi  # batch index of image
         self.n = n
@@ -994,7 +994,7 @@ class LoadImagesAndLabelsVisDrone(LoadImagesAndLabels):
                     shapes[i] = [1, 1 / mini]
 
             self.batch_shapes = (
-                np.ceil(np.array(shapes) * img_size / stride + pad).astype(np.int)
+                np.ceil(np.array(shapes) * img_size / stride + pad).astype(np.int32)
                 * stride
             )
 
@@ -1332,7 +1332,7 @@ def copy_paste(img, labels, segments, probability=0.5):
                 segments.append(np.concatenate((w - s[:, 0:1], s[:, 1:2]), 1))
                 cv2.drawContours(
                     im_new,
-                    [segments[j].astype(np.int)],
+                    [segments[j].astype(np.int32)],
                     -1,
                     (255, 255, 255),
                     cv2.FILLED,
@@ -1355,7 +1355,7 @@ def remove_background(img, labels, segments):
     img_new = np.ones(img.shape, np.uint8) * 114
     for j in range(n):
         cv2.drawContours(
-            im_new, [segments[j].astype(np.int)], -1, (255, 255, 255), cv2.FILLED
+            im_new, [segments[j].astype(np.int32)], -1, (255, 255, 255), cv2.FILLED
         )
 
         result = cv2.bitwise_and(src1=img, src2=im_new)
@@ -1392,7 +1392,7 @@ def sample_segments(img, labels, segments, probability=0.5):
             mask = np.zeros(img.shape, np.uint8)
 
             cv2.drawContours(
-                mask, [segments[j].astype(np.int)], -1, (255, 255, 255), cv2.FILLED
+                mask, [segments[j].astype(np.int32)], -1, (255, 255, 255), cv2.FILLED
             )
             sample_masks.append(mask[box[1] : box[3], box[0] : box[2], :])
 
@@ -1699,7 +1699,7 @@ def pastein(image, labels, sample_labels, sample_images, sample_masks):
                 r_image = cv2.resize(sample_images[sel_ind], (r_w, r_h))
                 temp_crop = image[ymin : ymin + r_h, xmin : xmin + r_w]
                 m_ind = r_mask > 0
-                if m_ind.astype(np.int).sum() > 60:
+                if m_ind.astype(np.int32).sum() > 60:
                     temp_crop[m_ind] = r_image[m_ind]
                     # print(sample_labels[sel_ind])
                     # print(sample_images[sel_ind].shape)
@@ -1809,7 +1809,7 @@ def extract_boxes(
                     b = x[1:] * [w, h, w, h]  # box
                     # b[2:] = b[2:].max()  # rectangle to square
                     b[2:] = b[2:] * 1.2 + 3  # pad
-                    b = xywh2xyxy(b.reshape(-1, 4)).ravel().astype(np.int)
+                    b = xywh2xyxy(b.reshape(-1, 4)).ravel().astype(np.int32)
 
                     b[[0, 2]] = np.clip(b[[0, 2]], 0, w)  # clip boxes outside of image
                     b[[1, 3]] = np.clip(b[[1, 3]], 0, h)
