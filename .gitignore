@@ -1,0 +1,9 @@
+*.pyc
+
+# cyx
+.vscode/*
+debug/*
+weights_yolo/*
+
+# intermediate products of training
+runs/*
