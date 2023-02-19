@@ -1,7 +1,7 @@
 
-train: ./visdrone/train.txt
-val: ./visdrone/val.txt
-test: ./visdrone/test.txt
+train: ./datasets/visdrone/train.txt
+val: ./datasets/visdrone/val.txt
+test: ./datasets/visdrone/test.txt
 
 nc: 10
 

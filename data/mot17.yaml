@@ -1,6 +1,6 @@
-train: ./mot17/train.txt
-val: ./mot17/val.txt
-test: ./mot17/val.txt
+train: ./datasets/mot17/train.txt
+val: ./datasets/mot17/val_sdp.txt  # [cui] need to be adjusted according to the requirements of the verification set(include: val, val_dpm, val_sdp)
+test: ./datasets/mot17/test.txt
 
 nc: 1
 
