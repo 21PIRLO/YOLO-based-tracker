@@ -1,9 +1,12 @@
 *.pyc
 
 # cyx
+Pipfile
 .vscode/*
 debug/*
 weights_yolo/*
+*.zip
 
 # intermediate products of training
 runs/*
+datasets/*/*.cache
