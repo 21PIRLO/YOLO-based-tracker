@@ -11,7 +11,8 @@ import argparse
 mm.lap.default_solver = 'lap'
 
 
-GT_PREFIX = os.path.join('/data/wujiapeng/datasets/VisDrone2019/VisDrone2019', 'VisDrone2019-MOT-test-dev/annotations')
+# GT_PREFIX = os.path.join('/data/wujiapeng/datasets/VisDrone2019/VisDrone2019', 'VisDrone2019-MOT-test-dev/annotations')
+GT_PREFIX = os.path.join('/perception/yixu.cui/datas/tracking/VisDrone2019', 'VisDrone2019-MOT-test-dev/annotations')
 RESULT_PREFIX = './tracker/results'
 
 class SeqEvaluator:
