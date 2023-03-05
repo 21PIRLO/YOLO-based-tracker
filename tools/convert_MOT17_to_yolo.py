@@ -1,5 +1,5 @@
 """
-将UAVDT转换为yolo v5格式
+将MOT17转换为yolo v5格式
 class_id, xc_norm, yc_norm, w_norm, h_norm
 """
 
@@ -11,6 +11,8 @@ import glob
 import numpy as np
 import random
 
+from tqdm import tqdm
+
 # DATA_ROOT = '/data/wujiapeng/datasets/MOT17/'
 DATA_ROOT = "/perception/yixu.cui/datas/tracking/MOT17"
 image_wh_dict = {}  # seq->(w,h) 字典 用于归一化
@@ -18,15 +20,23 @@ image_wh_dict = {}  # seq->(w,h) 字典 用于归一化
 
 def generate_imgs_and_labels(opts):
     """
-    产生图片路径的txt文件以及yolo格式真值文件
+    产生图片路径的txt文件以及yolo格式真值(gt)文件
     """
     if opts.split == "test":
         seq_list = os.listdir(osp.join(DATA_ROOT, "test"))
     else:
         seq_list = os.listdir(osp.join(DATA_ROOT, "train"))
         seq_list = [item for item in seq_list if "FRCNN" in item]  # 只取一个FRCNN即可
-        if "val" in opts.split:
+        if opts.split.lower() == "val":
             opts.half = True  # 验证集取训练集的一半
+        elif opts.split.lower() == "val_dpm":
+            opts.half = True  # 验证集取训练集的一半
+            seq_list = os.listdir(osp.join(DATA_ROOT, "train"))
+            seq_list = [item for item in seq_list if "DPM" in item]  # 只取一个DPM即可
+        elif opts.split.lower() == "val_sdp":
+            opts.half = True  # 验证集取训练集的一半
+            seq_list = os.listdir(osp.join(DATA_ROOT, "train"))
+            seq_list = [item for item in seq_list if "SDP" in item]  # 只取一个SDP即可
 
     print("--------------------------")
     print(f"Total {len(seq_list)} seqs!!")
@@ -62,37 +72,37 @@ def process_train_test(
 
     """
 
-    for seq in seqs:
+    for seq in tqdm(sorted(seqs)):
         print(f"Dealing with {split} dataset...")
 
-        img_dir = (
+        img_src_root = (
             osp.join(DATA_ROOT, "train", seq, "img1")
             if split != "test"
             else osp.join(DATA_ROOT, "test", seq, "img1")
         )  # 图片路径
-        imgs = sorted(os.listdir(img_dir))  # 所有图片的相对路径
+        imgs = sorted(os.listdir(img_src_root))  # 所有图片的相对路径
         seq_length = len(imgs)  # 序列长度
 
         if split != "test":
 
             # 求解图片高宽
-            img_eg = cv2.imread(osp.join(img_dir, imgs[0]))
+            img_eg = cv2.imread(osp.join(img_src_root, imgs[0]))
             w0, h0 = img_eg.shape[1], img_eg.shape[0]  # 原始高宽
 
-            ann_of_seq_path = os.path.join(img_dir, "../", "gt", "gt.txt")  # GT文件路径
+            ann_of_seq_path = os.path.join(img_src_root, "../", "gt", "gt.txt")  # GT文件路径
             ann_of_seq = np.loadtxt(
                 ann_of_seq_path, dtype=np.float32, delimiter=","
             )  # GT内容
 
-            gt_to_path = osp.join(DATA_ROOT, "labels", split, seq)  # 要写入的真值文件夹
+            gt_file_root = osp.join(DATA_ROOT, "labels", split, seq)  # 要写入的真值(gt)文件夹
             # 如果不存在就创建
-            if not osp.exists(gt_to_path):
-                os.makedirs(gt_to_path)
+            if not osp.exists(gt_file_root):
+                os.makedirs(gt_file_root)
 
-            exist_gts = []  # 初始化该列表 每个元素对应该seq的frame中有无真值框
+            exist_gts = []  # 初始化该列表 每个元素对应该seq的frame中有无真值(gt)框
             # 如果没有 就在train.txt产生图片路径
 
-            for idx, img in enumerate(imgs):
+            for idx, img_name in enumerate(tqdm(imgs)):
                 # img 形如: img000001.jpg
                 if idx < int(seq_length * frame_range["start"]) or idx > int(
                     seq_length * frame_range["end"]
@@ -102,23 +112,26 @@ def process_train_test(
                 # 第一步 产生图片软链接
                 # print('step1, creating imgs symlink...')
                 if opts.generate_imgs:
-                    img_to_path = osp.join(DATA_ROOT, "images", split, seq)  # 该序列图片存储位置
+                    img_link_root = osp.join(DATA_ROOT, "images", split, seq)  # 该序列图片存储位置
 
-                    if not osp.exists(img_to_path):
-                        os.makedirs(img_to_path)
+                    if not osp.exists(img_link_root):
+                        os.makedirs(img_link_root)
 
-                    os.symlink(
-                        osp.join(img_dir, img), osp.join(img_to_path, img)
-                    )  # 创建软链接
+                    link_name = osp.join(img_link_root, img_name)
+                    if not osp.exists(link_name):
+                        os.symlink(
+                            osp.join(img_src_root, img_name),
+                            link_name,
+                        )  # 创建软链接
 
-                # 第二步 产生真值文件
+                # 第二步 产生真值(gt)文件
                 # print('step2, generating gt files...')
                 ann_of_current_frame = ann_of_seq[
                     ann_of_seq[:, 0] == float(idx + 1), :
-                ]  # 筛选真值文件里本帧的目标信息
+                ]  # 筛选真值(gt)文件里本帧的目标信息
                 exist_gts.append(True if ann_of_current_frame.shape[0] != 0 else False)
 
-                gt_to_file = osp.join(gt_to_path, img[:-4] + ".txt")
+                gt_to_file = osp.join(gt_file_root, img_name[:-4] + ".txt")
 
                 with open(gt_to_file, "w") as f_gt:
                     for i in range(ann_of_current_frame.shape[0]):
@@ -156,10 +169,8 @@ def process_train_test(
 
                             f_gt.write(write_line)
 
-                f_gt.close()
-
         else:  # test 只产生图片软链接
-            for idx, img in enumerate(imgs):
+            for idx, img_name in enumerate(tqdm(imgs)):
                 # img 形如: img000001.jpg
                 if idx < int(seq_length * frame_range["start"]) or idx > int(
                     seq_length * frame_range["end"]
@@ -169,18 +180,21 @@ def process_train_test(
                 # 第一步 产生图片软链接
                 # print('step1, creating imgs symlink...')
                 if opts.generate_imgs:
-                    img_to_path = osp.join(DATA_ROOT, "images", split, seq)  # 该序列图片存储位置
+                    img_link_root = osp.join(DATA_ROOT, "images", split, seq)  # 该序列图片存储位置
 
-                    if not osp.exists(img_to_path):
-                        os.makedirs(img_to_path)
+                    if not osp.exists(img_link_root):
+                        os.makedirs(img_link_root, exist_ok=True)
 
-                    os.symlink(
-                        osp.join(img_dir, img), osp.join(img_to_path, img)
-                    )  # 创建软链接
+                    link_name = osp.join(img_link_root, img_name)
+                    if not osp.exists(link_name):
+                        os.symlink(
+                            osp.join(img_src_root, img_name),
+                            link_name,
+                        )  # 创建软链接
 
-        # 第三步 产生图片索引train.txt等
+        # 第三步 产生图片索引train.txt, test.txt等
         print(f"generating img index file of {seq}")
-        to_file = os.path.join("./mot17/", split + ".txt")
+        to_file = os.path.join("./datasets/mot17", split + ".txt")
         with open(to_file, "a") as f:
             for idx, img in enumerate(imgs):
                 if idx < int(seq_length * frame_range["start"]) or idx > int(
@@ -191,33 +205,18 @@ def process_train_test(
                 if split == "test" or exist_gts[idx]:
                     f.write("MOT17/" + "images/" + split + "/" + seq + "/" + img + "\n")
 
-            f.close()
-
 
 if __name__ == "__main__":
-    if not osp.exists("./mot17"):
-        os.system("mkdir mot17")
+    if not osp.exists("./datasets/mot17"):
+        os.makedirs("./datasets/mot17")
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--split", type=str, default="train", help="train, test or val")
-    parser.add_argument(
-        "--generate_imgs",
-        action="store_true",
-        help="whether generate soft link of imgs",
-    )
-    parser.add_argument("--certain_seqs", action="store_true", help="for debug")
-    parser.add_argument("--half", action="store_true", help="half frames")
-    parser.add_argument(
-        "--ratio",
-        type=float,
-        default=0.8,
-        help="ratio of test dataset devide train dataset",
-    )
-    parser.add_argument(
-        "--random",
-        action="store_true",
-        help="random split train and test",
-    )
+    parser.add_argument('--split', type=str, default='train', help='train, test, val or val_dpm')
+    parser.add_argument('--generate_imgs', action='store_true', help='whether generate soft link of imgs')
+    parser.add_argument('--certain_seqs', action='store_true', help='for debug')
+    parser.add_argument('--half', action='store_true', help='half frames')
+    parser.add_argument('--ratio', type=float, default=0.8, help='ratio of test dataset devide train dataset')
+    parser.add_argument('--random', action='store_true', help='random split train and test')
 
     opts = parser.parse_args()
 
