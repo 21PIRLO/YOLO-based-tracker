@@ -83,7 +83,8 @@ def select_device(device='', batch_size=None):
         s += 'CPU\n'
 
     logger.info(s.encode().decode('ascii', 'ignore') if platform.system() == 'Windows' else s)  # emoji-safe
-    return torch.device('cuda:0' if cuda else 'cpu')
+    # return torch.device('cuda:0' if cuda else 'cpu')
+    return torch.device('cuda' if cuda else 'cpu')  # [cui] what's the difference between 'cuda:0' and 'cuda'
 
 
 def time_synchronized():
