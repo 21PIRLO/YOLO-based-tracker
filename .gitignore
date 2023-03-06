@@ -10,3 +10,7 @@ weights_yolo/*
 # intermediate products of training
 runs/*
 datasets/*/*.cache
+
+# [cui] intermediate products of tracking
+tracker/results/*
+tracker/trackeval/metrics/__pycache__/*.pyc
