@@ -35,7 +35,7 @@ try:  # import package that outside the tracker folder  For yolo v7
 except:
     pass
 
-SAVE_FOLDER = 'demo_result'  # NOTE: set your save path here
+SAVE_FOLDER = './debug/demo_result'  # NOTE: set your save path here
 CATEGORY_DICT = {0: 'car'}  # NOTE: set the categories in your videos here, 
 # format: class_id(start from 0): class_name
 
@@ -151,7 +151,7 @@ def main(opts):
         results.append((frame_id + 1, cur_id, cur_tlwh, cur_cls))
         timer.toc()  # end timing this image
         
-        plot_img(img0, frame_id, [cur_tlwh, cur_id, cur_cls], save_dir=os.path.join(SAVE_FOLDER, 'reuslt_images', obj_name))
+        plot_img(img0, frame_id, [cur_tlwh, cur_id, cur_cls], save_dir=os.path.join(SAVE_FOLDER, 'result_images', obj_name))
     
         frame_id += 1
 
@@ -266,7 +266,7 @@ def save_videos(obj_name):
         obj_name = [obj_name]
 
     for seq in obj_name:
-        images_path = os.path.join(SAVE_FOLDER, 'reuslt_images', seq)
+        images_path = os.path.join(SAVE_FOLDER, 'result_images', seq)
         images_name = sorted(os.listdir(images_path))
 
         to_video_path = os.path.join(images_path, '../', seq + '.mp4')
