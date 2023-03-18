@@ -1,6 +1,7 @@
 # Config file of VisDrone dataset
 
-DATASET_ROOT: '/data/wujiapeng/datasets/VisDrone2019/VisDrone2019'
+# DATASET_ROOT: '/data/wujiapeng/datasets/VisDrone2019/VisDrone2019'
+DATASET_ROOT: '/perception/yixu.cui/datas/tracking/VisDrone2019'
 CATEGORY_NAMES: 
   - 'pedestrain'
   - 'people'
@@ -35,7 +36,8 @@ YAML_DICT:  './data/Visdrone_all.yaml'  # NOTE: ONLY for yolo v5 model loader(fu
 
 TRACK_EVAL:  # If use TrackEval to evaluate, use these configs
   'DISPLAY_LESS_PROGRESS': False
-  'GT_FOLDER': '/data/wujiapeng/datasets/VisDrone2019/VisDrone2019/VisDrone2019-MOT-test-dev/annotations'
+  # 'GT_FOLDER': '/data/wujiapeng/datasets/VisDrone2019/VisDrone2019/VisDrone2019-MOT-test-dev/annotations'
+  'GT_FOLDER': '/perception/yixu.cui/datas/tracking/VisDrone2019/VisDrone2019-MOT-test-dev/annotations'
   'TRACKERS_FOLDER': './tracker/results'
   'SKIP_SPLIT_FOL': True
   'TRACKER_SUB_FOLDER': ''
