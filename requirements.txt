@@ -37,3 +37,8 @@ thop  # FLOPs computation
 # albumentations>=1.0.3
 pycocotools>=2.0  # COCO mAP
 # roboflow
+
+# Tracking
+lap
+cython_bbox  # [cui] need to manual directly `pip install Cython` in advance. Ref:https://stackoverflow.com/a/56746386
+tabulate
