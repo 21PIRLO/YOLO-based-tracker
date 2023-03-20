@@ -182,6 +182,8 @@
                 "PYTHONPATH": "${workspaceFolder}"
             },
             "args": [
+                "--tracker",
+                "deepsort",
                 "--obj",
                 "videos/MOT17-07-SDP-raw.mp4",
                 "--model_path",
