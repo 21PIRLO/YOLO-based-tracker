@@ -1,0 +1,192 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            // "cwd": "${workspaceFolder}"
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        },
+        {
+            "name": "Python: Debug with args",
+            "type": "python",
+            "request": "launch",
+            // "program": "${workspaceFolder}/.venv/lib/python3.8/site-packages/torchpilot/runner/ddp_launcher.py",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            },
+            "args": [
+                "--split",
+                "val_dpm",
+                "--generate_imgs"
+            ],
+        },
+        {
+            "name": "Python: train-aux",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/.venv/lib/python3.8/site-packages/torch/distributed/launch.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            },
+            "args": [
+                "--nproc_per_node",
+                "2",
+                "${workspaceFolder}/train_aux.py",
+                "--dataset",
+                "mot17",
+                "--workers",
+                "32",
+                "--device",
+                "4,5",
+                "--batch-size",
+                "64",
+                "--data",
+                "data/mot17.yaml",
+                "--img",
+                "1280",
+                "1280",
+                "--cfg",
+                "cfg/training/yolov7-w6.yaml",
+                "--weights",
+                "runs/train/yolov7-w6-custom-0220-visdrone-4gpu-64w-64b-15epochs-sync-bn/weights/best.pt",
+                "--name",
+                "yolov7-w6-custom-0218-MOT17-64w-128b-15epochs",
+                "--hyp",
+                "data/hyp.scratch.custom.yaml",
+                "--epochs",
+                "30",
+                // "--resume",
+                // "runs/train/yolov7-w6-custom-0220-visdrone-4gpu-64w-64b-15epochs-sync-bn/weights/epoch_014.pt"
+            ],
+        },
+        {
+            "name": "Python: train-aux-debug",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/train_aux.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            },
+            "args": [
+                "--dataset",
+                "mot20",
+                "--workers",
+                "0",
+                "--device",
+                "4",
+                "--batch-size",
+                "16",
+                "--data",
+                "data/mot20.yaml",
+                "--img",
+                "1280",
+                "1280",
+                "--cfg",
+                "cfg/training/yolov7-w6.yaml",
+                "--weights",
+                "weights_yolo/yolov7-w6_training.pt",
+                "--name",
+                "yolov7-w6-custom-0309-MOT17-32w-16b-15epochs_debug",
+                "--hyp",
+                "data/hyp.scratch.custom.yaml",
+                "--epochs",
+                "15",
+                // "--resume",
+                // "runs/train/yolov7-w6-custom-0220-visdrone-4gpu-64w-64b-15epochs-sync-bn/weights/epoch_014.pt"
+            ],
+        },
+        {
+            "name": "Python: Inferring",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/test.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            },
+            "args": [
+                "--dataset",
+                "mot20",
+                "--device",
+                "4,5,6,7",
+                "--batch-size",
+                "64",
+                "--data",
+                "data/mot20.yaml",
+                "--img-size",
+                "1280",
+                "--weights",
+                "runs/train/yolov7-w6-custom-0220-MOT20-train-4gpu-64w-64b-30epochs/weights/epoch_026.pt",
+                "--project",
+                "runs/val",
+                "--name",
+                "yolov7-w6-custom-0221-MOT20-train-4gpu-64w-64b-30epochs-sync-bn-last-conf0.35",
+                "--conf-thres",
+                "0.35",
+                "--iou-thres",
+                "0.65",
+                "--task",
+                "val",
+                "--save-hybrid",
+                "--save-conf",
+                "--save-json"
+            ],
+        },
+        {
+            "name": "Python: Tracking",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/tracker/track.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            },
+            "args": [
+                "--dataset",
+                "visdrone",
+                "--data_format",
+                "origin",
+                "--tracker",
+                "deepsort",
+                "--model_path",
+                "runs/train/yolov7-w6-custom-0218-MOT17-64w-128b-50epochs/weights/best.pt",
+            ],
+        },
+        {
+            "name": "Python: track_demo",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/tracker/track_demo.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            },
+            "args": [
+                "--obj",
+                "videos/MOT17-07-SDP-raw.mp4",
+                "--model_path",
+                "runs/train/yolov7-w6-custom-0309-MOT17-val_sdp-4gpu-64w-32b-20epochs/weights/best.pt"
+            ],
+        }
+    ]
+}
