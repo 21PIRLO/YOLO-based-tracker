@@ -10,11 +10,13 @@ import cv2
 import glob
 import numpy as np
 import random
+import shutil
 
 from tqdm import tqdm
 
 # DATA_ROOT = '/data/wujiapeng/datasets/MOT20/'
-DATA_ROOT = "/perception/yixu.cui/datas/tracking/MOT20"
+# DATA_ROOT = "/perception/yixu.cui/datas/tracking/MOT20"
+DATA_ROOT = "/share-global/yixu.cui/datas/tracking/MOT20"
 image_wh_dict = {}  # seq->(w,h) 字典 用于归一化
 
 
@@ -123,6 +125,21 @@ def process_train_test(
                             osp.join(img_src_root, img_name),
                             link_name,
                         )  # 创建软链接
+                else:
+                    img_link_root = osp.join(
+                        DATA_ROOT, "images", split, seq
+                    )  # 该序列图片存储位置
+
+                    if not osp.exists(img_link_root):
+                        os.makedirs(img_link_root, exist_ok=True)
+
+                    link_name = osp.join(img_link_root, img_name)
+                    if not osp.exists(link_name):
+                        # print(link_name)
+                        shutil.copy2(
+                            osp.join(img_src_root, img_name),
+                            link_name,
+                        )  # 创建软链接
 
                 # 第二步 产生真值(gt)文件
                 # print('step2, generating gt files...')
@@ -193,10 +210,26 @@ def process_train_test(
                             osp.join(img_src_root, img_name),
                             link_name,
                         )  # 创建软链接
+                else:
+                    img_link_root = osp.join(
+                        DATA_ROOT, "images", split, seq
+                    )  # 该序列图片存储位置
+
+                    if not osp.exists(img_link_root):
+                        os.makedirs(img_link_root, exist_ok=True)
+
+                    link_name = osp.join(img_link_root, img_name)
+                    print(link_name)
+                    if not osp.exists(link_name):
+                        print(link_name)
+                        shutil.copy2(
+                            osp.join(img_src_root, img_name),
+                            link_name,
+                        )  # 创建软链接
 
         # 第三步 产生图片索引train.txt, test.txt等
         print(f"generating img index file of {seq}")
-        to_file = os.path.join("./datasets/mot20", split + ".txt")
+        to_file = os.path.join(opts.local_dataset_dir, split + ".txt")
         with open(to_file, "a") as f:
             for idx, img in enumerate(imgs):
                 if idx < int(seq_length * frame_range["start"]) or idx > int(
@@ -209,11 +242,13 @@ def process_train_test(
 
 
 if __name__ == "__main__":
-    if not osp.exists("./datasets/mot20"):
-        os.makedirs("./datasets/mot20")
+    local_dataset_dir = "./datasets/mot20_sg"
+    if not osp.exists(local_dataset_dir):
+        os.makedirs(local_dataset_dir, exist_ok=True)
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--split', type=str, default='train', help='train, test, val or val_dpm')
+    parser.add_argument('--local_dataset_dir', type=str, default=local_dataset_dir, help='to save datasets file and cache')
+    parser.add_argument('--split', type=str, default='train', help='train, test, val, train_overlap or val_dpm')
     parser.add_argument('--generate_imgs', action='store_true', help='whether generate soft link of imgs')
     parser.add_argument('--certain_seqs', action='store_true', help='for debug')
     parser.add_argument('--half', action='store_true', help='half frames')
