@@ -660,7 +660,8 @@ class LoadImagesAndLabels(Dataset):  # for training/testing
             try:
                 # verify images
                 im = Image.open(im_file)
-                im.verify()  # PIL verify
+                if Path(im_file).is_symlink():
+                    im.verify()  # PIL verify
                 shape = exif_size(im)  # image size
                 segments = []  # instance segments
                 assert (shape[0] > 9) & (shape[1] > 9), f"image size {shape} <10 pixels"
@@ -934,7 +935,8 @@ class LoadImagesAndLabelsVisDrone(LoadImagesAndLabels):
         self.path = path
 
         # PREFIX = "/data/wujiapeng/datasets/"
-        PREFIX = "/perception/yixu.cui/datas/tracking/"
+        # PREFIX = "/perception/yixu.cui/datas/tracking/"
+        PREFIX = "/share-global/yixu.cui/datas/tracking/"
         path = Path(path)
         assert path.is_file(), "wrong format for VisDrone"
 
