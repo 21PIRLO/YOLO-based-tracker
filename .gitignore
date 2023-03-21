@@ -2,8 +2,9 @@
 
 # cyx
 Pipfile
-.vscode/*
+.vscode/*.json
 debug/*
+# [cui] weights_yolo/* need to download from https://github.com/WongKinYiu/yolov7/releases -> Assets
 weights_yolo/*
 *.zip
 
@@ -14,3 +15,4 @@ datasets/*/*.cache
 # [cui] intermediate products of tracking
 tracker/results/*
 tracker/trackeval/metrics/__pycache__/*.pyc
+videos/*

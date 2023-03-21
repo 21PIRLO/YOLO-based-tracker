@@ -1,6 +1,9 @@
-train: ./datasets/mot20/train.txt  # has two trainsets: train & train_overlap
-val: ./datasets/mot20/val.txt  # [cui] MOT20-02
-test: ./datasets/mot20/test.txt
+# train: ./datasets/mot20/train.txt  # has two trainsets: train & train_overlap
+# val: ./datasets/mot20/val.txt  # [cui] MOT20-02
+# test: ./datasets/mot20/test.txt
+train: ./datasets/mot20_sg/train.txt  # has two trainsets: train & train_overlap
+val: ./datasets/mot20_sg/val.txt  # [cui] MOT20-02
+test: ./datasets/mot20_sg/test.txt
 
 nc: 1
 

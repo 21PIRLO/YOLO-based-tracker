@@ -65,6 +65,10 @@ python tracker/track.py --dataset mot17 --data_format yolo --tracker deepsort --
 
 
 # [cui]
+# product datasets
+python tools/convert_MOT20_to_yolo.py --split train --generate_imgs
+
+
 train:
 # visdrone
 # COCO pretrained *.pt
@@ -73,7 +77,7 @@ python -m torch.distributed.launch --nproc_per_node 4 train_aux.py --dataset vis
 python -m torch.distributed.launch --nproc_per_node 4 train_aux.py --dataset visdrone --workers 64 --device 4,5,6,7 --sync-bn --batch-size 64 --data data/visdrone_all.yaml --img 1280 1280 --cfg cfg/training/yolov7-w6.yaml --weights './weights_yolo/yolov7-w6_training.pt' --hyp data/hyp.scratch.custom.yaml --name yolov7-w6-custom-0220-visdrone-4gpu-64w-64b-15epochs-sync-bn --epochs 15 2>&1 | tee ./debug/log/info_yolov7-w6-custom-0220-visdrone-64w-64b-15epochs-sync-bn.log
 
 # --resume subsequent training from runs/train/yolov7-w6-custom-0220-visdrone-4gpu-64w-64b-15epochs-sync-bn/weights/best.pt
-python -m torch.distributed.launch --nproc_per_node 4 train_aux.py --dataset visdrone --workers 64 --device 4,5,6,7 --sync-bn --batch-size 64 --data data/visdrone_all.yaml --img 1280 1280 --cfg cfg/training/yolov7-w6.yaml --weights ''runs/train/yolov7-w6-custom-0220-visdrone-4gpu-64w-64b-15epochs-sync-bn/weights/best.pt'' --hyp data/hyp.scratch.custom.yaml --name yolov7-w6-custom-0222-visdrone-64w-64b-50epochs-sync-bn-resume --epochs 25 2>&1 | tee ./debug/log/info_yolov7-w6-custom-0222-visdrone-64w-64b-25epochs-sync-bn-resume.log
+python -m torch.distributed.launch --nproc_per_node 4 train_aux.py --dataset visdrone --workers 64 --device 4,5,6,7 --sync-bn --batch-size 64 --data data/visdrone_all.yaml --img 1280 1280 --cfg cfg/training/yolov7-w6.yaml --weights 'runs/train/yolov7-w6-custom-0220-visdrone-4gpu-64w-64b-15epochs-sync-bn/weights/best.pt' --hyp data/hyp.scratch.custom.yaml --name yolov7-w6-custom-0222-visdrone-64w-64b-50epochs-sync-bn-resume --epochs 25 2>&1 | tee ./debug/log/info_yolov7-w6-custom-0222-visdrone-64w-64b-25epochs-sync-bn-resume.log
 
 
 # COCO pretrained *.pt
@@ -83,6 +87,10 @@ python -m torch.distributed.launch --nproc_per_node 4 train_aux.py --dataset mot
 python -m torch.distributed.launch --nproc_per_node 4 train_aux.py --dataset mot17 --workers 64 --device 4,5,6,7 --batch-size 64 --data data/mot17.yaml --img 1280 1280 --cfg cfg/training/yolov7-w6.yaml --weights './weights_yolo/yolov7-w6.pt' --hyp data/hyp.scratch.custom.yaml --name yolov7-w6-coco-0219-MOT17-val_dpm-4gpu-64w-64b-30epochs --epochs 30 2>&1 | tee ./debug/log/info_yolov7-w6-custom-0219-MOT17-val_dpm-4gpu-64w-64b-30epochs.log
 # MOT17-val_sdp
 python -m torch.distributed.launch --nproc_per_node 4 train_aux.py --dataset mot17 --workers 64 --device 4,5,6,7 --batch-size 64 --data data/mot17.yaml --img 1280 1280 --cfg cfg/training/yolov7-w6.yaml --weights './weights_yolo/yolov7-w6.pt' --hyp data/hyp.scratch.custom.yaml --name yolov7-w6-custom-0219-MOT17-val_sdp-4gpu-64w-64b-30epochs --epochs 30 2>&1 | tee ./debug/log/info_yolov7-w6-custom-0219-MOT17-val_sdp-4gpu-64w-64b-30epochs.log
+# ./weights_yolo/yolov7-w6_training.pt
+python -m torch.distributed.launch --nproc_per_node 4 train_aux.py --dataset mot17 --workers 64 --device 4,5,6,7 --batch-size 32 --data data/mot17.yaml --img 1280 1280 --cfg cfg/training/yolov7-w6.yaml --weights './weights_yolo/yolov7-w6_training.pt' --hyp data/hyp.scratch.custom.yaml --name yolov7-w6-custom-0309-MOT17-val_sdp-4gpu-64w-32b-20epochs --epochs 20 2>&1 | tee ./debug/log/info_yolov7-w6-custom-0309-MOT17-val_sdp-4gpu-64w-32b-20epochs.log
+# ./weights_yolo/yolov7-w6_training.pt --resume runs/**/xxx.pt e.g. runs/train/yolov7-w6-custom-0309-MOT17-val_sdp-4gpu-64w-32b-20epochs/weights/last.pt
+python -m torch.distributed.launch --nproc_per_node 4 train_aux.py --dataset mot17 --workers 64 --device 4,5,6,7 --batch-size 32 --data data/mot17.yaml --img 1280 1280 --cfg cfg/training/yolov7-w6.yaml --weights './weights_yolo/yolov7-w6_training.pt' --hyp data/hyp.scratch.custom.yaml --name yolov7-w6-custom-0309-MOT17-val_sdp-4gpu-64w-32b-20epochs --epochs 20 --resume runs/train/yolov7-w6-custom-0309-MOT17-val_sdp-4gpu-64w-32b-20epochs/weights/last.pt 2>&1 | tee ./debug/log/info_yolov7-w6-custom-0309-MOT17-val_sdp-4gpu-64w-32b-20epochs.log
 
 # traning *.pt
 python -m torch.distributed.launch --nproc_per_node 4 train_aux.py --dataset mot17 --workers 64 --device 4,5,6,7 --batch-size 64 --data data/mot17.yaml --img 1280 1280 --cfg cfg/training/yolov7-w6.yaml --weights './weights_yolo/yolov7-w6_training.pt' --hyp data/hyp.scratch.custom.yaml --name yolov7-w6-custom-0219-MOT17-val_sdp-4gpu-64w-64b-30epochs --epochs 30 2>&1 | tee ./debug/log/info_yolov7-w6-custom-0219-MOT17-val_sdp-4gpu-64w-64b-30epochs.log
@@ -97,9 +105,16 @@ python -m torch.distributed.launch --nproc_per_node 4 train_aux.py --dataset mot
 
 
 # MOT20-train  --sync-bn
-python -m torch.distributed.launch --nproc_per_node 4 train_aux.py --dataset mot20 --workers 64 --device 4,5,6,7 --sync-bn --batch-size 64 --data data/mot20.yaml --img 1280 1280 --cfg cfg/training/yolov7-w6.yaml --weights './weights_yolo/yolov7-w6_training.pt' --hyp data/hyp.scratch.custom.yaml --name yolov7-w6-custom-0222-MOT20-train-4gpu-64w-64b-30epochs-sync-bn --epochs 30 2>&1 | tee ./debug/log/info_yolov7-w6-custom-0222-MOT20-train-4gpu-64w-64b-30epochs-sync-bn.log
+python -m torch.distributed.launch --nproc_per_node 4 train_aux.py --dataset mot20 --workers 32 --device 4,5,6,7 --sync-bn --batch-size 64 --data data/mot20.yaml --img 1280 1280 --cfg cfg/training/yolov7-w6.yaml --weights './weights_yolo/yolov7-w6_training.pt' --hyp data/hyp.scratch.custom.yaml --name yolov7-w6-custom-0222-MOT20-train-4gpu-32w-64b-30epochs-sync-bn --epochs 30 2>&1 | tee ./debug/log/info_yolov7-w6-custom-0222-MOT20-train-4gpu-32w-64b-30epochs-sync-bn.log
+# MOT20-train  --sync-bn --batch-size 16
+python -m torch.distributed.launch --nproc_per_node 4 train_aux.py --dataset mot20 --workers 32 --device 4,5,6,7 --sync-bn --batch-size 16 --data data/mot20.yaml --img 1280 1280 --cfg cfg/training/yolov7-w6.yaml --weights './weights_yolo/yolov7-w6_training.pt' --hyp data/hyp.scratch.custom.yaml --name yolov7-w6-custom-0308-MOT20-train-4gpu-32w-16b-30epochs-sync-bn --epochs 30 2>&1 | tee ./debug/log/info_yolov7-w6-custom-0308-MOT20-train-4gpu-32w-16b-30epochs-sync-bn.log
 # MOT20-train_overlap  --sync-bn
-python -m torch.distributed.launch --nproc_per_node 4 train_aux.py --dataset mot20 --workers 64 --device 4,5,6,7 --sync-bn --batch-size 64 --data data/mot20.yaml --img 1280 1280 --cfg cfg/training/yolov7-w6.yaml --weights './weights_yolo/yolov7-w6_training.pt' --hyp data/hyp.scratch.custom.yaml --name yolov7-w6-custom-0220-MOT20-train_overlap-4gpu-64w-64b-30epochs-sync-bn --epochs 30 2>&1 | tee ./debug/log/info_yolov7-w6-custom-0220-MOT20-train_overlap-4gpu-64w-64b-30epochs-sync-bn.log
+python -m torch.distributed.launch --nproc_per_node 4 train_aux.py --dataset mot20 --workers 32 --device 4,5,6,7 --sync-bn --batch-size 64 --data data/mot20.yaml --img 1280 1280 --cfg cfg/training/yolov7-w6.yaml --weights './weights_yolo/yolov7-w6_training.pt' --hyp data/hyp.scratch.custom.yaml --name yolov7-w6-custom-0220-MOT20-train_overlap-4gpu-32w-64b-30epochs-sync-bn --epochs 30 2>&1 | tee ./debug/log/info_yolov7-w6-custom-0220-MOT20-train_overlap-4gpu-32w-64b-30epochs-sync-bn.log
+# MOT20-train_overlap  --sync-bn --batch-size 16
+python -m torch.distributed.launch --nproc_per_node 4 train_aux.py --dataset mot20 --workers 32 --device 4,5,6,7 --sync-bn --batch-size 16 --data data/mot20.yaml --img 1280 1280 --cfg cfg/training/yolov7-w6.yaml --weights './weights_yolo/yolov7-w6_training.pt' --hyp data/hyp.scratch.custom.yaml --name yolov7-w6-custom-0309-MOT20-train_overlap-4gpu-32w-16b-15epochs-sync-bn --epochs 15 2>&1 | tee ./debug/log/info_yolov7-w6-custom-0309-MOT20-train_overlap-4gpu-32w-16b-15epochs-sync-bn.log
+python train_aux.py --dataset mot20 --workers 8 --device 4  --batch-size 16 --data data/mot20.yaml --img 1280 1280 --cfg cfg/training/yolov7-w6.yaml --weights './weights_yolo/yolov7-w6_training.pt' --hyp data/hyp.scratch.custom.yaml --name yolov7-w6-custom-0309-MOT20-train-1gpu-8w-16b-15epochs --epochs 15 2>&1 | tee ./debug/log/info_yolov7-w6-custom-0309-MOT20-train-1gpu-8w-16b-15epochs.log
+# MOT20-train_overlap  --sync-bn --batch-size 32
+python -m torch.distributed.launch --nproc_per_node 2 train_aux.py --dataset mot20 --workers 32 --device 4,5  --batch-size 32 --data data/mot20.yaml --img 1280 1280 --cfg cfg/training/yolov7-w6.yaml --weights './weights_yolo/yolov7-w6.pt' --hyp data/hyp.scratch.custom.yaml --name yolov7-w6-custom-0310-MOT20-train-2gpu-32w-32b-15epochs-sync-bn --epochs 15 --sync-bn 2>&1 | tee ./debug/log/info_yolov7-w6-custom-0310-MOT20-train-2gpu-32w-32b-15epochs-sync-bn.log
 
 
 # test
@@ -109,3 +124,7 @@ python test.py --dataset mot20 --device 4,5,6,7 --batch-size 64 --data data/mot2
 python -m torch.distributed.launch --nproc_per_node 4 test.py --dataset mot20 --device 4,5,6,7 --batch-size 64 --data data/mot20.yaml --img-size 1280 --weights ./runs/train/yolov7-w6-custom-0221-MOT20-train-4gpu-64w-64b-30epochs-sync-bn/weights/last.pt --project runs/val --name yolov7-w6-custom-0221-MOT20-train-4gpu-64w-64b-30epochs-sync-bn-last --conf-thres 0.001 --iou-thres 0.65 --task val --save-hybrid
 
 python -m torch.distributed.launch --nproc_per_node 4 test.py --dataset mot20 --device 4,5,6,7 --batch-size 64 --data data/mot20.yaml --img-size 1280 --weights ./runs/train/yolov7-w6-custom-0221-MOT20-train-4gpu-64w-64b-30epochs-sync-bn/weights/last.pt --project runs/val --name yolov7-w6-custom-0221-MOT20-train-4gpu-64w-64b-30epochs-sync-bn-last-conf0.1 --conf-thres 0.1 --iou-thres 0.65 --task val --save-hybrid
+
+# track
+python tracker/track_demo.py --tracker deepsort --obj videos/MOT17-07-SDP-raw.mp4 --model_path runs/train/yolov7-w6-custom-0309-MOT17-val_sdp-4gpu-64w-32b-20epochs/weights/best.pt
+
