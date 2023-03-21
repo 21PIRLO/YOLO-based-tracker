@@ -431,3 +431,9 @@ def plot_results(start=0, stop=0, bucket='', id=(), labels=(), save_dir=''):
 
     ax[1].legend()
     fig.savefig(Path(save_dir) / 'results.png', dpi=200)
+
+
+if __name__ == '__main__':
+    # plot resluts
+    to_plot_dir = 'runs/train/yolov7-w6-custom-0308-MOT20-train-4gpu-32w-16b-30epochs-sync-bn'
+    plot_results(save_dir=to_plot_dir)
