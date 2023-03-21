@@ -14,7 +14,7 @@ class DeepSORT(BaseTracker):
 
         self.reid_model = Extractor(opts.reid_model_path, use_cuda=True)
         self.gamma = gamma  # coef that balance the apperance and iou
-        self.filter_small_area = False  # filter area < 50 bboxs
+        self.filter_small_area = False  # filter out the bboxes with an area less than 50
         
     def get_feature(self, tlbrs, ori_img):
         """
@@ -22,21 +22,21 @@ class DeepSORT(BaseTracker):
         tlbrs: shape (num_of_objects, 4)
         ori_img: original image, np.ndarray, shape(H, W, C)
         """
-        obj_bbox = []
+        obj_bboxes = []
 
         for tlbr in tlbrs:
             tlbr = list(map(int, tlbr))
             # if any(tlbr_ == -1 for tlbr_ in tlbr):
             #     print(tlbr)
-            obj_bbox.append(
+            obj_bboxes.append(
                 ori_img[tlbr[1]: tlbr[3], tlbr[0]: tlbr[2]]
             )
         
-        if obj_bbox:  # obj_bbox is not []
-            features = self.reid_model(obj_bbox)  # shape: (num_of_objects, feature_dim)
-
+        if obj_bboxes:  # obj_bboxes is not []
+            features = self.reid_model(obj_bboxes)  # shape: (num_of_objects, feature_dim)
         else:
             features = np.array([])
+
         return features
     
     def gate_cost_matrix(self, cost_matrix, tracks, dets, max_apperance_thresh=0.15, gated_cost=1e5, only_position=False):
@@ -160,7 +160,6 @@ class DeepSORT(BaseTracker):
                 refind_stracks.append(track)
 
         """ Step 3. association with motion"""
-        
         u_tracks0 = [strack_pool[i] for i in u_tracks0_idx if strack_pool[i].state == TrackState.Tracked]
         u_dets0 = [detections[i] for i in u_dets0_idx]
 
@@ -279,4 +278,3 @@ def remove_duplicate_stracks(stracksa, stracksb):
     resa = [t for i,t in enumerate(stracksa) if not i in dupa]
     resb = [t for i,t in enumerate(stracksb) if not i in dupb]
     return resa, resb
-            
