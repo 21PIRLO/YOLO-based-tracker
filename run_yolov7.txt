@@ -125,6 +125,8 @@ python -m torch.distributed.launch --nproc_per_node 4 test.py --dataset mot20 --
 
 python -m torch.distributed.launch --nproc_per_node 4 test.py --dataset mot20 --device 4,5,6,7 --batch-size 64 --data data/mot20.yaml --img-size 1280 --weights ./runs/train/yolov7-w6-custom-0221-MOT20-train-4gpu-64w-64b-30epochs-sync-bn/weights/last.pt --project runs/val --name yolov7-w6-custom-0221-MOT20-train-4gpu-64w-64b-30epochs-sync-bn-last-conf0.1 --conf-thres 0.1 --iou-thres 0.65 --task val --save-hybrid
 
-# track
+# track: deepsort
 python tracker/track_demo.py --tracker deepsort --obj videos/MOT17-07-SDP-raw.mp4 --model_path runs/train/yolov7-w6-custom-0309-MOT17-val_sdp-4gpu-64w-32b-20epochs/weights/best.pt
+# track: bytetrack
+python tracker/track_demo.py --tracker bytetrack --obj videos/MOT17-07-SDP-raw.mp4 --model_path weights_yolo/yolov7-w6_training.pt
 
