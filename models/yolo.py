@@ -341,6 +341,12 @@ class Model(nn.Module):
                     m(x.copy() if c else x)
                 dt.append((time_synchronized() - t) * 100)
                 print('%10.1f%10.0f%10.1fms %-40s' % (o, m.np, dt[-1], m.type))
+            # [cui] Ref1.0: https://github.com/WongKinYiu/yolov7/issues/647#issuecomment-1238006745
+            # [cui] Ref1.1: https://github.com/WongKinYiu/yolov7/issues/520#issuecomment-1223438537
+            # [cui] Ref2: https://github.com/WongKinYiu/yolov7/issues/647#issuecomment-1423777996
+            if isinstance(m, nn.Upsample):
+            #    if check_version(torch.__version__, '1.10.0'):
+                m.recompute_scale_factor = False
 
             x = m(x)  # run
             
