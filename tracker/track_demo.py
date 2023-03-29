@@ -280,7 +280,7 @@ def save_videos(obj_name):
                 frame = cv2.imread(os.path.join(images_path, img))
                 vw.write(frame)
     
-    print('Save videos Done!!')
+    print(f"Save videos to {to_video_path} !!!")
 
 
 def get_color(idx):

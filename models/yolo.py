@@ -344,6 +344,7 @@ class Model(nn.Module):
             # [cui] Ref1.0: https://github.com/WongKinYiu/yolov7/issues/647#issuecomment-1238006745
             # [cui] Ref1.1: https://github.com/WongKinYiu/yolov7/issues/520#issuecomment-1223438537
             # [cui] Ref2: https://github.com/WongKinYiu/yolov7/issues/647#issuecomment-1423777996
+            # [cui] Ref3: https://github.com/ultralytics/yolov5/issues/6948#issuecomment-1299936326
             if isinstance(m, nn.Upsample):
             #    if check_version(torch.__version__, '1.10.0'):
                 m.recompute_scale_factor = False
